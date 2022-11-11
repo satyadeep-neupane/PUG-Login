@@ -1,0 +1,28 @@
+extends layouts/admin
+block content
+  a.btn.btn-primary(href='/user/create') Create User
+  table.table 
+    thead 
+      tr 
+        th(scope="col") # 
+        th(scope="col") Name 
+        th(scope="col") Email
+        th(scope="col") Password
+        th(scope="col") Action
+    tbody
+      //- tr
+      //-   td 1
+      //-   td John Doe
+      //-   td test@test.com
+      //-   td
+          a.btn.btn-primary(href="#" class="me-2") Edit
+          a.btn.btn-danger(href="#") Delete
+      each user in users
+        tr
+          th(scope="row")= user.id
+          td= user.name
+          td= user.email
+          td= user.password
+          td
+            a.btn.btn-primary(href="/user/edit/" + user.id) Edit
+            a.btn.btn-danger(href="/user/delete/" + user.id) Delete

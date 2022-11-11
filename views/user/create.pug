@@ -1,0 +1,9 @@
+extends layouts/admin
+block content
+  form(action='/user' method='POST')
+    input(type="text" name="name" placeholder="Name" class="form-control mb-2")
+    input(type="text" name="email" placeholder="Email" class="form-control mb-2")
+    input(type="password" name="password" placeholder="Password" class="form-control mb-2")
+
+    button.btn.btn-primary(href='/user/create') Create User
+  
