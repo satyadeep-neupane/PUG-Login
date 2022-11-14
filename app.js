@@ -1,6 +1,10 @@
 const express = require('express');
 const app = express();
 
+const cookieparser = require('cookie-parser');
+
+app.use(cookieparser());
+
 
 app.use(express.urlencoded({ extended: false }))
 
@@ -31,6 +35,11 @@ app.use('/user', userRoute);
 
 app.get('/', (req, res) => {
     res.render('index');
+});
+
+app.get('/my-profile', (req, res) => {
+    res.send(req.cookies);
+    return res.send("My Profile");    
 });
 
 app.listen(process.env.PORT, () => {

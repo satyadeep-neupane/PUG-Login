@@ -20,7 +20,12 @@ exports.index = async (req, res) => {
 }
 
 exports.store = async (req, res) => {
-    console.log(req.body.password)
+    const ifUserExists = await User.find({email: req.body.email});
+    
+    if(ifUserExists.length >= 1){
+        return res.redirect('/user');
+    }
+
     bcrypt.hash(req.body.password, saltRounds).then(function(hash) {
         const newUser = new User({
             name: req.body.name,
@@ -37,14 +42,14 @@ exports.login = (req, res) => {
     return res.render('user/login');
 }
 
-exports.verifyUser = async (req, res) => {
+exports.attemptLogin = async (req, res) => {
     try{
         const email = req.body.email;
         const password = req.body.password;
         
-        if(email == null || password == null)
+        if(email == '' || password == '')
         {
-            res.send("Fill Username or Password");
+            return res.send("Fill Username or Password");
         }
 
         const user = await User.findOne({'email': email});
@@ -60,4 +65,21 @@ exports.verifyUser = async (req, res) => {
     {
         console.log(err);
     }
+}
+
+exports.delete = async (req, res) => {
+    try{
+        const id = req.params.id;
+        const user = await User.findByIdAndRemove(id);
+        res.redirect('/user');
+    }catch(err){
+        return res.status(500).send({
+            message: err.message || "Some error occurred while deleting user."
+        });
+    }
+}
+
+function generateAccessToken(payload) {
+    // expires after half and hour (1800 seconds = 30 minutes)
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60s' });
 }
