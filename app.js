@@ -37,9 +37,15 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+const verifyAuth = require('./app/middleware/verifyAuth');
+
+// app.use('/auth', verifyAuth);
 app.get('/my-profile', (req, res) => {
-    res.send(req.cookies);
-    return res.send("My Profile");    
+    return res.send("My Profile - " + req.user.email);    
+});
+
+app.get('/your-profile', (req, res) => {
+    return res.send("Your Profile - " + req.user.email);    
 });
 
 app.listen(process.env.PORT, () => {

@@ -2,6 +2,8 @@ const User = require('../model/model.user');
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const jwt = require('jsonwebtoken');
+
 
 
 exports.create = async (req, res) => {
@@ -57,7 +59,10 @@ exports.attemptLogin = async (req, res) => {
         const match = await bcrypt.compare(password, user.password);
 
         if(match) {
-            res.send("Login Successful");
+            const accessToken = generateAccessToken(generatePayload(user));
+            const refreshToken = generateRefreshToken(generatePayload(user));
+            res.cookie('token', accessToken)
+                .send("Login Successful");
         }else{
             res.send("Username or password Invalid");
         }
@@ -81,5 +86,20 @@ exports.delete = async (req, res) => {
 
 function generateAccessToken(payload) {
     // expires after half and hour (1800 seconds = 30 minutes)
-    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60s' });
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+}
+
+function generateRefreshToken(payload) {
+    // expires after half and hour (1800 seconds = 30 minutes)
+    return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' });
+}
+
+function generatePayload(user)
+{
+    return {
+        sub: user._id,
+        email: user.email,
+        role: user.role,
+        iat: Math.floor(Date.now() / 1000) - 30
+    }
 }
